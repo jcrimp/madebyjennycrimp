@@ -1,3 +1,10 @@
+@import "normalize";
+@import "skeleton/core/config";
+@import "skeleton/themes/original/vars";
+@import "skeleton/themes/original/include_components";
+@import "skeleton/themes/original/grid";
+
+
 body {
   width: calc(100% - 40px);
   float: left;
@@ -8,4 +15,5 @@ body {
   body::after {
     clear: both;
     content: "";
-    display: block; }
+    display: block;
+}

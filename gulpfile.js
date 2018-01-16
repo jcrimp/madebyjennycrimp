@@ -1,16 +1,32 @@
-const gulp = require('gulp')
-const deploy = require('gulp-gh-pages')
 const autoprefix = require('gulp-autoprefixer')
+// const bourbon = require('bourbon').includePaths
 const connect = require('gulp-connect')
-const bourbon = require('bourbon').includePaths
-const neat = require('bourbon-neat').includePaths
-const sass = require('gulp-sass')
+const cssnano = require('gulp-cssnano')
+const deploy = require('gulp-gh-pages')
+const gulp = require('gulp')
+// const neat = require('bourbon-neat').includePaths
 const opn = require('opn')
+const path = require('path')
 const pug = require('gulp-pug')
+const sass = require('gulp-sass')
+const sourcemaps = require('gulp-sourcemaps')
 
 var paths = {
   scss: ['src/assets/stylesheets/**/*.scss']
 }
+var prependNodeModules = function(dirPath) {
+  return path.join(__dirname, 'node_modules', dirPath)
+}
+var normalize = [
+  'normalize-scss/sass' // import normalize-scss
+]
+normalize = normalize.map(prependNodeModules)
+
+var skeleton = [
+  'skeleton-sass-official' // theme grid styles
+]
+skeleton = skeleton.map(prependNodeModules)
+console.log(skeleton)
 
 gulp.task('pug', function() {
   return gulp.src('src/index.pug')
@@ -21,11 +37,13 @@ gulp.task('pug', function() {
 
 gulp.task('sass', function () {
   return gulp.src(paths.scss)
+    .pipe(sourcemaps.init())
     .pipe(sass({
-        sourcemaps: true,
-        includePaths: [bourbon, neat]
-    }))
+        includePaths: [normalize, skeleton]
+    }).on('error', sass.logError))
     .pipe(autoprefix('last 2 versions'))
+    .pipe(cssnano())
+    .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('dist/assets/stylesheets'))
     .pipe(connect.reload());
 });
